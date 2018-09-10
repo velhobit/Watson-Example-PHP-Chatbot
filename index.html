@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Teste Watson</title>
+</head>
+
+<body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+<div id="watson" class="watson">
+	<div class="mensagens">
+		<div class="area" id="chat">
+		</div>
+	</div>
+	<form id="mensagem" class="mensagem">
+		<input type="text" id="texto" name="texto" placeholder="Digite sua mensagem"/>
+		<button type="submit">Enviar</button>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+	jQuery("#mensagem").submit(function(){
+		
+		if(jQuery("#mensagem #texto").val() === ""){
+			jQuery("#chat").append("<div class=\"texto usuario\">...</div>");
+			$(".mensagens").animate({scrollTop: $("#chat").height()});
+			setTimeout(function(){
+				jQuery("#chat").append("<div class=\"texto chatbot\">Você precisa digitar alguma coisa para prosseguir.</div>");
+				$(".mensagens").animate({scrollTop: $("#chat").height()});
+			},1000);
+			return false;
+		}
+		
+		jQuery.ajax({
+			url: "/watson/?texto=" + jQuery("#mensagem #texto").val(),
+			dataType: 'json',
+			beforeSend: function(){
+				jQuery("#chat").append("<div class=\"texto usuario\">" + jQuery("#mensagem #texto").val() + "</div>");	
+			},
+			success: function(resposta){
+				jQuery("#mensagem #texto").val("");
+				jQuery("#mensagem #texto").focus();
+				
+				if(resposta.error){
+					jQuery("#chat").append("<div class=\"texto chatbot\">" + resposta.error + "</div>");
+					return false;
+				}
+				var mensagemChatbot  = "<div class=\"texto chatbot\">";
+				mensagemChatbot		+= resposta.output.text[0];
+				mensagemChatbot		+= "</div>";
+				setTimeout(function(){
+					jQuery("#chat").append(mensagemChatbot);
+					$(".mensagens").animate({scrollTop: $("#chat").height()});
+				},1000);
+			}
+		});
+		
+		return false;
+	});
+</script>
+<style>
+	.watson{
+		border: 1px solid #B0BEC5;
+		border-radius: 3px;
+		height: 50em;
+		max-height: 500px;
+		padding: 1em;
+		
+		max-width: 500px;
+		margin: 0 auto;
+		
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+	
+	.watson .mensagens{
+		box-sizing: border-box;
+		overflow: hidden;
+		overflow-y: auto;
+		height: 100%;
+	}
+	
+	.watson .mensagens .area{
+		display: flex;
+		justify-content: flex-end;
+		flex-direction: column;
+		min-height: 100%;
+	}
+	
+	.watson .mensagens .texto{
+		border-radius: 2px;
+		box-sizing: border-box;
+		padding: .65em;
+		margin-top: .5em;
+		
+		animation: popupmensagem linear .2s;
+		animation-iteration-count: 1;
+		-webkit-animation: popupmensagem linear .2s;
+		-webkit-animation-iteration-count: 1;
+		-moz-animation: popupmensagem linear .2s;
+		-moz-animation-iteration-count: 1;
+		-o-animation: popupmensagem linear .2s;
+		-o-animation-iteration-count: 1;
+		-ms-animation: popupmensagem linear .2s;
+		-ms-animation-iteration-count: 1;
+	}
+	
+	.watson .mensagens .texto:first-child{
+		margin-top: 0;
+	}
+	
+	.watson .mensagens .texto.usuario{
+		background-color: #ECEFF1;
+		color: #1A237E;
+		margin-right: 30%;
+		
+		transform-origin: 0% 100%;
+		-webkit-transform-origin: 0% 100%;
+		-moz-transform-origin: 0% 100%;
+		-o-transform-origin: 0% 100%;
+		-ms-transform-origin: 0% 100%;
+	}
+	
+	.watson .mensagens .texto.chatbot{
+		background-color: #FF5722;
+		color: white;
+		font-weight: bold;
+		margin-left: 30%;
+		
+		transform-origin: 100% 100%;
+		-webkit-transform-origin: 100% 100%;
+		-moz-transform-origin: 100% 100%;
+		-o-transform-origin: 100% 100%;
+		-ms-transform-origin: 100% 100%;
+	}
+	
+	.watson form.mensagem{
+		padding: 0;
+		margin-top: 1em;
+	}
+	
+	.watson form.mensagem input{
+		border: 2px solid #476A7B;
+		border-radius: 3px;
+		padding: .5em .8em;
+		font-size: 16px;
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+	}
+	
+	.watson form.mensagem input:focus{
+		border: 2px solid #1A237E;
+		outline: none;
+	}
+	
+	.watson form.mensagem button{
+		background-color: #3F51B5;
+		border: none;
+		border-radius: 3px;
+		display: block;
+		padding: .5em 1em;
+		width: 100%;
+		font-size: 16px;
+		color: white;
+		margin-top: .5em;
+	}
+	
+	
+	/**Animação de Mensagem**/
+	
+	@keyframes popupmensagem{
+	  0% {
+		transform:  scaleX(0.30) scaleY(0.30) ;
+	  }
+	  100% {
+		transform:  scaleX(1.00) scaleY(1.00) ;
+	  }
+	}
+
+	@-moz-keyframes popupmensagem{
+	  0% {
+		-moz-transform:  scaleX(0.30) scaleY(0.30) ;
+	  }
+	  100% {
+		-moz-transform:  scaleX(1.00) scaleY(1.00) ;
+	  }
+	}
+
+	@-webkit-keyframes popupmensagem {
+	  0% {
+		-webkit-transform:  scaleX(0.30) scaleY(0.30) ;
+	  }
+	  100% {
+		-webkit-transform:  scaleX(1.00) scaleY(1.00) ;
+	  }
+	}
+
+	@-o-keyframes popupmensagem {
+	  0% {
+		-o-transform:  scaleX(0.30) scaleY(0.30) ;
+	  }
+	  100% {
+		-o-transform:  scaleX(1.00) scaleY(1.00) ;
+	  }
+	}
+
+	@-ms-keyframes popupmensagem {
+	  0% {
+		-ms-transform:  scaleX(0.30) scaleY(0.30) ;
+	  }
+	  100% {
+		-ms-transform:  scaleX(1.00) scaleY(1.00) ;
+	  }
+	}
+</style>
+
+</body>
+</html>

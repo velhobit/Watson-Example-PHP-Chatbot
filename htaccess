@@ -1,0 +1,5 @@
+#Evitar Acesso Externo
+Order Deny,Allow
+Deny from all
+Allow from 127.           # localhost
+#Coloque mais permissão para os IPs que deseja acesso.
